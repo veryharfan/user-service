@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 	"os"
 
@@ -50,6 +51,9 @@ func InitConfig(ctx context.Context) (*Config, error) {
 	}
 
 	viper.AutomaticEnv()
+
+	fmt.Println("JWT_SECRETKEY (viper):", viper.GetString("JWT_SECRETKEY"))
+	fmt.Println("os.Getenv:", os.Getenv("JWT_SECRETKEY"))
 
 	if err := viper.Unmarshal(&cfg); err != nil {
 		slog.ErrorContext(ctx, "[InitConfig] Unmarshal", "failed bind config", err)
