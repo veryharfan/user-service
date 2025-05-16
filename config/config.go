@@ -10,24 +10,24 @@ import (
 )
 
 type Config struct {
-	Port string    `mapstructure:"port" validate:"required"`
-	Host string    `mapstructure:"host"`
+	Port string    `mapstructure:"PORT" validate:"required"`
+	Host string    `mapstructure:"HOST"`
 	Db   DbConfig  `mapstructure:",squash"`
 	Jwt  JwtConfig `mapstructure:",squash"`
 }
 
 type DbConfig struct {
-	Host     string `mapstructure:"db_host" validate:"required"`
-	Port     string `mapstructure:"db_port" validate:"required"`
-	Username string `mapstructure:"db_username" validate:"required"`
-	Password string `mapstructure:"db_password" validate:"required"`
-	DbName   string `mapstructure:"db_dbname" validate:"required"`
-	SSLMode  string `mapstructure:"db_sslmode"`
+	Host     string `mapstructure:"DB_HOST" validate:"required"`
+	Port     string `mapstructure:"DB_PORT" validate:"required"`
+	Username string `mapstructure:"DB_USERNAME" validate:"required"`
+	Password string `mapstructure:"DB_PASSWORD" validate:"required"`
+	DbName   string `mapstructure:"DB_DBNAME" validate:"required"`
+	SSLMode  string `mapstructure:"DB_SSLMODE"`
 }
 
 type JwtConfig struct {
-	SecretKey string `mapstructure:"jwt_secretkey" validate:"required"`
-	Expire    int64  `mapstructure:"jwt_expire" validate:"required"`
+	SecretKey string `mapstructure:"JWT_SECRETKEY" validate:"required"`
+	Expire    int64  `mapstructure:"JWT_EXPIRE" validate:"required"`
 }
 
 func InitConfig(ctx context.Context) (*Config, error) {
