@@ -2,9 +2,9 @@ package config
 
 import (
 	"context"
-	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
@@ -34,7 +34,16 @@ type JwtConfig struct {
 func InitConfig(ctx context.Context) (*Config, error) {
 	var cfg Config
 
+	// Reset viper to avoid any previous configuration
+	viper.Reset()
+
+	// Make viper case insensitive for environment variables
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	// Set the configuration type
 	viper.SetConfigType("env")
+
+	// Try to load from .env file if it exists
 	envFile := os.Getenv("ENV_FILE")
 	if envFile == "" {
 		envFile = ".env"
@@ -45,30 +54,71 @@ func InitConfig(ctx context.Context) (*Config, error) {
 		viper.SetConfigFile(envFile)
 
 		if err := viper.ReadInConfig(); err != nil {
-			slog.ErrorContext(ctx, "[InitConfig] ReadInConfig", "error", err)
-			return nil, err
+			slog.WarnContext(ctx, "[InitConfig] ReadInConfig warning, continuing with env vars only", "error", err)
+			// Continue with just environment variables instead of returning error
+		} else {
+			slog.InfoContext(ctx, "[InitConfig] Successfully loaded config file", "file", envFile)
 		}
+	} else {
+		slog.InfoContext(ctx, "[InitConfig] No config file found, using environment variables")
 	}
 
+	// Load environment variables
 	viper.AutomaticEnv()
 
-	fmt.Println("JWT_SECRETKEY (viper):", viper.GetString("JWT_SECRETKEY"))
-	fmt.Println("os.Getenv:", os.Getenv("JWT_SECRETKEY"))
+	// Debug: Print environment variables we're looking for
+	envVars := []string{"PORT", "HOST", "DB_HOST", "DB_PORT", "DB_USERNAME",
+		"DB_PASSWORD", "DB_DBNAME", "DB_SSLMODE", "JWT_SECRETKEY", "JWT_EXPIRE"}
 
+	slog.InfoContext(ctx, "[InitConfig] Environment variables debug:")
+	for _, key := range envVars {
+		// Check both actual env var and viper's value
+		slog.InfoContext(ctx, "[InitConfig] Env var check",
+			"key", key,
+			"os.Getenv", os.Getenv(key),
+			"viper.GetString", viper.GetString(key))
+	}
+
+	// Bind environment variables explicitly to ensure they're mapped correctly
+	for _, key := range envVars {
+		viper.BindEnv(key)
+	}
+
+	// Unmarshal configuration
 	if err := viper.Unmarshal(&cfg); err != nil {
 		slog.ErrorContext(ctx, "[InitConfig] Unmarshal", "failed bind config", err)
 		return nil, err
 	}
 
+	// Log the entire configuration after binding
+	slog.InfoContext(ctx, "[InitConfig] Configuration after binding",
+		"PORT", cfg.Port,
+		"HOST", cfg.Host,
+		"DB_HOST", cfg.Db.Host,
+		"DB_PORT", cfg.Db.Port,
+		"DB_USERNAME", cfg.Db.Username,
+		"DB_DBNAME", cfg.Db.DbName,
+		"DB_SSLMODE", cfg.Db.SSLMode,
+		"JWT_EXPIRE", cfg.Jwt.Expire)
+
+	// Validate configuration
 	validate := validator.New()
 	if err := validate.Struct(cfg); err != nil {
-		for _, err := range err.(validator.ValidationErrors) {
+		validationErrs, ok := err.(validator.ValidationErrors)
+		if ok {
+			for _, validationErr := range validationErrs {
+				slog.ErrorContext(ctx, "[InitConfig] Validation error",
+					"field", validationErr.Field(),
+					"namespace", validationErr.Namespace(),
+					"tag", validationErr.Tag(),
+					"value", validationErr.Value())
+			}
+		} else {
 			slog.ErrorContext(ctx, "[InitConfig] Validation", "error", err)
 		}
-		slog.ErrorContext(ctx, "[InitConfig] Validation", "error", err)
 		return nil, err
 	}
 
-	slog.InfoContext(ctx, "[InitConfig] Config loaded", "config", cfg)
+	slog.InfoContext(ctx, "[InitConfig] Config loaded successfully")
 	return &cfg, nil
 }
