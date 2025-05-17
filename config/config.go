@@ -71,13 +71,6 @@ func InitConfig(ctx context.Context) (*Config, error) {
 		"DB_PASSWORD", "DB_DBNAME", "DB_SSLMODE", "JWT_SECRETKEY", "JWT_EXPIRE"}
 
 	slog.InfoContext(ctx, "[InitConfig] Environment variables debug:")
-	for _, key := range envVars {
-		// Check both actual env var and viper's value
-		slog.InfoContext(ctx, "[InitConfig] Env var check",
-			"key", key,
-			"os.Getenv", os.Getenv(key),
-			"viper.GetString", viper.GetString(key))
-	}
 
 	// Bind environment variables explicitly to ensure they're mapped correctly
 	for _, key := range envVars {
