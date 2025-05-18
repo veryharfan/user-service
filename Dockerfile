@@ -8,7 +8,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o user-service cmd/
 
 # Final image
 FROM alpine:latest
-EXPOSE 80
+EXPOSE 8080
 
 RUN apk --no-cache add ca-certificates tzdata
 
