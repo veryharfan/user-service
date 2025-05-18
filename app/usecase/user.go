@@ -45,9 +45,7 @@ func (u *userUsecase) Register(ctx context.Context, req *domain.UserRequest) (*d
 	}
 
 	return &domain.UserResponse{
-		Username:  req.Username,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
+		Username: req.Username,
 	}, nil
 }
 
@@ -79,6 +77,8 @@ func (u *userUsecase) Login(ctx context.Context, req *domain.UserRequest) (*doma
 		slog.ErrorContext(ctx, "[userUsecase] Login", "createJwtToken", err)
 		return nil, err
 	}
+
+	slog.InfoContext(ctx, "[userUsecase] Login", req.Username, "User logged in successfully")
 
 	return &domain.LoginResponse{
 		Token: token,

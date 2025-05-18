@@ -6,8 +6,8 @@ import (
 
 func SetupRouter(app *fiber.App, handler *userHandler) {
 	// Setup user routes
-	userGroup := app.Group("/user")
+	userGroup := app.Group("/user-service")
 
-	userGroup.Post("/register", handler.Register)
+	userGroup.Post("/users", handler.Register)
 	userGroup.Post("/login", handler.Login)
 }
