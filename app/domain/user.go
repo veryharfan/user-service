@@ -23,6 +23,7 @@ type User struct {
 	Email     *string
 	Phone     *string
 	Password  string
+	ShopID    *int64
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

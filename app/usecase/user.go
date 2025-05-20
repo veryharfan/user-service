@@ -72,7 +72,7 @@ func (u *userUsecase) Login(ctx context.Context, req *domain.UserRequest) (*doma
 		return nil, domain.ErrUnauthorized
 	}
 
-	token, err := pkg.CreateJwtToken(user.ID, u.cfg.Jwt.SecretKey, u.cfg.Jwt.Expire)
+	token, err := pkg.CreateJwtToken(user.ID, user.ShopID, u.cfg.Jwt.SecretKey, u.cfg.Jwt.Expire)
 	if err != nil {
 		slog.ErrorContext(ctx, "[userUsecase] Login", "createJwtToken", err)
 		return nil, err

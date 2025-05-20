@@ -28,11 +28,11 @@ func (r *userRepository) Create(ctx context.Context, user *domain.User) error {
 }
 
 func (r *userRepository) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
-	query := `SELECT id, email, phone, password, created_at, updated_at FROM users WHERE email = $1`
+	query := `SELECT id, email, phone, password, shop_id, created_at, updated_at FROM users WHERE email = $1`
 	row := r.conn.QueryRowContext(ctx, query, email)
 
 	user := &domain.User{}
-	err := row.Scan(&user.ID, &user.Email, &user.Phone, &user.Password, &user.CreatedAt, &user.UpdatedAt)
+	err := row.Scan(&user.ID, &user.Email, &user.Phone, &user.Password, &user.ShopID, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		slog.ErrorContext(ctx, "[userRepository] GetByEmail", "scan", err)
 		if err == sql.ErrNoRows {
@@ -45,11 +45,11 @@ func (r *userRepository) GetByEmail(ctx context.Context, email string) (*domain.
 }
 
 func (r *userRepository) GetByPhone(ctx context.Context, phone string) (*domain.User, error) {
-	query := `SELECT id, email, phone, password, created_at, updated_at FROM users WHERE phone = $1`
+	query := `SELECT id, email, phone, password, shop_id, created_at, updated_at FROM users WHERE phone = $1`
 	row := r.conn.QueryRowContext(ctx, query, phone)
 
 	user := &domain.User{}
-	err := row.Scan(&user.ID, &user.Email, &user.Phone, &user.Password, &user.CreatedAt, &user.UpdatedAt)
+	err := row.Scan(&user.ID, &user.Email, &user.Phone, &user.Password, &user.ShopID, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		slog.ErrorContext(ctx, "[userRepository] GetByPhone", "scan", err)
 		if err == sql.ErrNoRows {
