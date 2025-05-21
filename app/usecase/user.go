@@ -84,3 +84,20 @@ func (u *userUsecase) Login(ctx context.Context, req *domain.UserRequest) (*doma
 		Token: token,
 	}, nil
 }
+
+func (u *userUsecase) AddShopID(ctx context.Context, userID int64, shopID int64) error {
+	user, err := u.userRepo.GetByID(ctx, userID)
+	if err != nil {
+		slog.ErrorContext(ctx, "[userUsecase] AddShopID", "getUser", err)
+		return err
+	}
+
+	err = u.userRepo.AddShopID(ctx, user.ID, shopID)
+	if err != nil {
+		slog.ErrorContext(ctx, "[userUsecase] AddShopID", "addShopID", err)
+		return err
+	}
+
+	slog.InfoContext(ctx, "[userUsecase] AddShopID", "success", "Shop ID added successfully")
+	return nil
+}

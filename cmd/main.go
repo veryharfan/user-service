@@ -69,7 +69,7 @@ func main() {
 	}))
 	app.Use(middleware.RequestIDMiddleware())
 
-	handler.SetupRouter(app, userHandler)
+	handler.SetupRouter(app, userHandler, cfg)
 
 	go func() {
 		if err := app.Listen(":" + cfg.Port); err != nil {
