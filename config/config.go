@@ -67,8 +67,18 @@ func InitConfig(ctx context.Context) (*Config, error) {
 	viper.AutomaticEnv()
 
 	// Debug: Print environment variables we're looking for
-	envVars := []string{"PORT", "DB_HOST", "DB_PORT", "DB_USERNAME",
-		"DB_PASSWORD", "DB_DBNAME", "DB_SSLMODE", "JWT_SECRETKEY", "JWT_EXPIRE", "INTERNAL_AUTH_HEADER"}
+	envVars := []string{
+		"PORT",
+		"DB_HOST",
+		"DB_PORT",
+		"DB_USERNAME",
+		"DB_PASSWORD",
+		"DB_DBNAME",
+		"DB_SSLMODE",
+		"JWT_SECRETKEY",
+		"JWT_EXPIRE",
+		"INTERNAL_AUTH_HEADER",
+	}
 
 	slog.InfoContext(ctx, "[InitConfig] Environment variables debug:")
 

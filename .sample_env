@@ -1,6 +1,6 @@
 # Server Configuration
-PORT=8080
-HOST=localhost
+PORT=8081
+INTERNAL_AUTH_HEADER=your_internal_auth_header
 
 # Database Configuration
 DB_HOST=localhost
